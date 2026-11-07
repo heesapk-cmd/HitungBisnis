@@ -77,12 +77,16 @@ document.getElementById("hjCalc").onclick=()=>{
   );
 };
 
-// =========================
-// HPP - BIAYA DINAMIS
-// =========================
+ // =========================
+ // HPP - BIAYA DINAMIS
+ // =========================
 
 const costList = document.getElementById("costList");
 const addCost = document.getElementById("addCost");
+
+// Data hasil HPP untuk dicetak
+window.hppPrintData = null;
+
 
 // Tambah baris biaya
 addCost.addEventListener("click", () => {
@@ -122,7 +126,7 @@ addCost.addEventListener("click", () => {
 
 
 // Hapus baris biaya
-function updateRemoveButtons(){
+function updateRemoveButtons() {
 
   document.querySelectorAll(".remove-cost").forEach(button => {
 
@@ -130,8 +134,7 @@ function updateRemoveButtons(){
 
       const rows = document.querySelectorAll(".cost-row");
 
-      // Minimal harus tersisa satu baris
-      if(rows.length <= 1){
+      if (rows.length <= 1) {
         alert("Minimal harus ada satu biaya.");
         return;
       }
@@ -149,57 +152,48 @@ function updateRemoveButtons(){
 updateRemoveButtons();
 
 
-// Hitung HPP
+// =========================
+// HITUNG HPP
+// =========================
+
 document.getElementById("hppCalc").onclick = () => {
 
   const qty = num("hppQty");
 
-  if(
-    qty <= 0 ||
-    !Number.isFinite(qty)
-  ){
-
+  if (qty <= 0 || !Number.isFinite(qty)) {
     return alert("Masukkan jumlah produk yang valid.");
-
   }
-
 
   const rows = document.querySelectorAll(".cost-row");
 
   let totalBiaya = 0;
-
   let biayaTerisi = 0;
-
+  let rincian = [];
 
   rows.forEach(row => {
 
-    const valueInput = row.querySelector(".cost-value");
+    const nama = row.querySelector(".cost-name").value.trim();
+    const value = Number(row.querySelector(".cost-value").value);
 
-    const value = Number(valueInput.value);
-
-    if(
-      Number.isFinite(value) &&
-      value > 0
-    ){
+    if (Number.isFinite(value) && value > 0) {
 
       totalBiaya += value;
-
       biayaTerisi++;
+
+      rincian.push({
+        nama: nama || "Biaya lainnya",
+        nominal: value
+      });
 
     }
 
   });
 
-
-  if(biayaTerisi === 0){
-
+  if (biayaTerisi === 0) {
     return alert("Masukkan minimal satu biaya.");
-
   }
 
-
   const hpp = totalBiaya / qty;
-
 
   result(
     "hppResult",
@@ -224,52 +218,191 @@ document.getElementById("hppCalc").onclick = () => {
     `
   );
 
+  // Simpan data hasil perhitungan
+  window.hppPrintData = {
+    tanggal: new Date(),
+    qty: qty,
+    totalBiaya: totalBiaya,
+    hpp: hpp,
+    rincian: rincian
+  };
+
+  // Tampilkan tombol cetak
+  document.getElementById("hppPrint").style.display = "block";
+
 };
 
-document.getElementById("mmCalc").onclick=()=>{
 
-  const modal = num("mmModal");
-  const jual = num("mmJual");
+// =========================
+// CETAK HASIL HPP
+// =========================
 
-  if(
-    modal < 0 ||
-    jual <= 0 ||
-    !Number.isFinite(modal) ||
-    !Number.isFinite(jual)
-  ){
-    return alert("Masukkan angka yang valid.");
+document.getElementById("hppPrint").onclick = () => {
+
+  const data = window.hppPrintData;
+
+  if (!data) {
+    return alert("Hitung HPP terlebih dahulu.");
   }
 
-  const profit = jual - modal;
+  // Pengaman teks HTML
+  const escapeHTML = text => String(text).replace(/[&<>"']/g, c => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#39;"
+  })[c]);
 
-  const margin = (profit / jual) * 100;
+  // Rincian biaya
+  const rincianHTML = data.rincian.map(item => `
+    <tr>
+      <td>${escapeHTML(item.nama)}</td>
+      <td class="nominal">${rupiah(item.nominal)}</td>
+    </tr>
+  `).join("");
 
-  const markup = modal === 0
-    ? 0
-    : (profit / modal) * 100;
+  // Buka halaman cetak
+  const printWindow = window.open("", "_blank");
 
-  result(
-    "mmResult",
-    `
-      <div class="label">
-        Keuntungan per unit
+  if (!printWindow) {
+    return alert("Izinkan pop-up browser untuk mencetak.");
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="id">
+
+    <head>
+      <meta charset="UTF-8">
+      <title>Laporan Perhitungan HPP</title>
+
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          font-family: Arial, sans-serif;
+          padding: 30px;
+          color: #222;
+          max-width: 800px;
+          margin: auto;
+        }
+
+        h2 {
+          text-align: center;
+          margin-bottom: 5px;
+        }
+
+        .date {
+          text-align: center;
+          color: #666;
+          margin-bottom: 30px;
+          font-size: 13px;
+        }
+
+        table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-top: 20px;
+        }
+
+        th, td {
+          padding: 12px;
+          border-bottom: 1px solid #ddd;
+        }
+
+        th {
+          text-align: left;
+          background: #f2f2f2;
+        }
+
+        .nominal {
+          text-align: right;
+        }
+
+        .summary {
+          margin-top: 25px;
+          border-top: 2px solid #222;
+          padding-top: 15px;
+        }
+
+        .summary div {
+          display: flex;
+          justify-content: space-between;
+          margin: 12px 0;
+        }
+
+        .hpp {
+          font-size: 22px;
+          font-weight: bold;
+          margin-top: 20px;
+          padding: 15px;
+          background: #f2f2f2;
+        }
+
+        @media print {
+          body {
+            padding: 0;
+          }
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <h2>LAPORAN PERHITUNGAN HPP</h2>
+
+      <div class="date">
+        ${data.tanggal.toLocaleString("id-ID")}
       </div>
 
-      <div class="main-value">
-        ${rupiah(profit)}
+      <h3>Rincian Biaya</h3>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Nama Biaya</th>
+            <th class="nominal">Nominal</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          ${rincianHTML}
+        </tbody>
+      </table>
+
+      <div class="summary">
+
+        <div>
+          <span>Total Biaya</span>
+          <b>${rupiah(data.totalBiaya)}</b>
+        </div>
+
+        <div>
+          <span>Jumlah Produk</span>
+          <b>${data.qty.toLocaleString("id-ID")}</b>
+        </div>
+
+        <div class="hpp">
+          <span>HPP per Unit</span>
+          <span>${rupiah(data.hpp)}</span>
+        </div>
+
       </div>
 
-      <div class="line">
-        <span>Margin</span>
-        <b>${margin.toFixed(2)}%</b>
-      </div>
+      <script>
+        window.onload = function() {
+          window.print();
+        };
+      <\/script>
 
-      <div class="line">
-        <span>Markup</span>
-        <b>${markup.toFixed(2)}%</b>
-      </div>
-    `
-  );
+    </body>
+    </html>
+  `);
+
+  printWindow.document.close();
 
 };
 
