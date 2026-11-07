@@ -1,0 +1,165 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HitungBisnis - Kalkulator Bisnis Gratis</title>
+  <meta name="description" content="Kumpulan kalkulator bisnis gratis untuk menghitung harga jual, HPP, margin, markup, diskon, dan BEP.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="container nav">
+    <a class="brand" href="#" data-tool="home">Hitung<span>Bisnis</span></a>
+    <button class="menu-toggle" id="menuToggle">☰</button>
+    <nav id="navMenu">
+      <a href="#" data-tool="harga-jual">Harga Jual</a>
+      <a href="#" data-tool="hpp">HPP</a>
+      <a href="#" data-tool="margin">Margin & Markup</a>
+      <a href="#" data-tool="diskon">Diskon</a>
+      <a href="#" data-tool="bep">BEP</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section id="home" class="page active">
+    <div class="hero">
+      <p class="eyebrow">TOOLS BISNIS GRATIS</p>
+      <h1>Kalkulator bisnis, jadi lebih mudah.</h1>
+      <p class="lead">Hitung harga jual, HPP, keuntungan, diskon, dan BEP dengan cepat dan gratis.</p>
+    </div>
+    <div class="tool-grid">
+      <button class="tool-card" data-tool="harga-jual"><b>💰 Harga Jual</b><span>Hitung harga jual berdasarkan modal dan target keuntungan.</span></button>
+      <button class="tool-card" data-tool="hpp"><b>📦 HPP</b><span>Hitung harga pokok per unit dari total biaya.</span></button>
+      <button class="tool-card" data-tool="margin"><b>📈 Margin & Markup</b><span>Hitung margin atau markup dari harga jual dan modal.</span></button>
+      <button class="tool-card" data-tool="diskon"><b>🏷️ Diskon</b><span>Hitung nilai potongan dan harga setelah diskon.</span></button>
+      <button class="tool-card" data-tool="bep"><b>⚖️ BEP</b><span>Hitung titik impas unit dan omzet.</span></button>
+    </div>
+  </section>
+
+  <section id="harga-jual" class="page">
+    <div class="page-head"><p class="eyebrow">KALKULATOR 01</p><h1>Harga Jual</h1><p>Masukkan modal per unit dan target keuntungan.</p></div>
+    <div class="calculator">
+      <label>
+        Modal / HPP per unit 
+        <input id="hjModal" type="number" min="0" step="any" placeholder="50000"></label>
+      <label>
+        Metode keuntungan
+        <select id="hjMethod">
+          <option value="markup">Markup</option>
+          <option value="margin">Margin</option></select></label>
+      <label>
+        Target keuntungan (%)
+        <input id="hjProfit" type="number" min="0" max="99.99" step="any" placeholder="30"></label>
+      <button class="primary" id="hjCalc">Hitung</button>
+      <div class="result" id="hjResult"></div>
+    </div>
+  </section>
+
+<section id="hpp" class="page">
+  <div class="page-head">
+    <p class="eyebrow">KALKULATOR 02</p>
+    <h1>HPP</h1>
+    <p>Tambahkan biaya sesuai kebutuhan usaha kamu.</p>
+  </div>
+
+  <div class="calculator">
+    <label>
+      Jumlah produk / unit
+      <input
+        id="hppQty"
+        type="number"
+        min="1"
+        step="any"
+        placeholder="100">
+    </label>
+    <div class="cost-header">
+      <strong>Biaya</strong>
+      <button type="button" id="addCost" class="add-cost">
+        + Tambah biaya
+      </button>
+    </div>
+    <div id="costList">
+      <div class="cost-row">
+        <input
+          type="text"
+          class="cost-name"
+          placeholder="Contoh: Bahan baku"
+        >
+        <input
+          type="number"
+          class="cost-value"
+          min="0"
+          step="any"
+          placeholder="3000000"
+        >
+        <button
+          type="button"
+          class="remove-cost"
+          title="Hapus biaya"
+        >
+          ×
+        </button>
+      </div>
+    </div>
+    <button class="primary" id="hppCalc">
+      Hitung HPP
+    </button>
+
+    <div class="result" id="hppResult"></div>
+
+  </div>
+</section>
+
+  <section id="margin" class="page">
+    <div class="page-head"><p class="eyebrow">KALKULATOR 03</p><h1>Margin & Markup</h1><p>Bandingkan keuntungan terhadap harga jual dan modal.</p></div>
+    <div class="calculator">
+      <label>Modal / HPP <input id="mmModal" type="number" min="0" step="any" placeholder="50000"></label>
+      <label>Harga jual <input id="mmJual" type="number" min="0" step="any" placeholder="75000"></label>
+      <button class="primary" id="mmCalc">Hitung</button>
+      <div class="result" id="mmResult"></div>
+    </div>
+  </section>
+
+  <section id="diskon" class="page">
+    <div class="page-head"><p class="eyebrow">KALKULATOR 04</p><h1>Diskon</h1><p>Hitung potongan harga dan harga akhir.</p></div>
+    <div class="calculator">
+      <label>Harga awal <input id="dkHarga" type="number" min="0" step="any" placeholder="250000"></label>
+      <label>Diskon (%) <input id="dkPersen" type="number" min="0" max="100" step="any" placeholder="20"></label>
+      <button class="primary" id="dkCalc">Hitung</button>
+      <div class="result" id="dkResult"></div>
+    </div>
+  </section>
+
+  <section id="bep" class="page">
+    <div class="page-head"><p class="eyebrow">KALKULATOR 05</p><h1>BEP</h1><p>Hitung jumlah minimal penjualan agar tidak rugi.</p></div>
+    <div class="calculator">
+      <label>
+  Total Biaya tetap per bulan
+  <input id="bepTetap" type="number" min="0" step="any" placeholder="5000000">
+  <small>Contoh: Total sewa, gaji tetap, listrik, dll.</small>
+</label>
+
+<label>
+  Harga jual per produk
+  <input id="bepJual" type="number" min="0" step="any" placeholder="100000">
+</label>
+
+<label>
+  HPP per 1 produk
+  <input id="bepVariabel" type="number" min="0" step="any" placeholder="60000">
+  <small>Hasil Hitung HPP.</small>
+</label>
+      <button class="primary" id="bepCalc">Hitung</button>
+      <div class="result" id="bepResult"></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="container">© <span id="year"></span> HitungBisnis · Kalkulator bisnis gratis</div>
+</footer>
+<script src="script.js"></script>
+</body>
+</html>
